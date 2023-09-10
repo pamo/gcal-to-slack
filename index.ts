@@ -8,10 +8,8 @@ export async function handler(
   callback: Callback,
 ): Promise<any> {
   try {
-    // Load Google Calendar API credentials from environment variables
-    const googleCreds = JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON);
+    const googleCreds = JSON.parse(process?.env?.GOOGLE_CREDENTIALS_JSON || "");
 
-    // Create a Google Calendar API client
     const auth = new google.auth.GoogleAuth({
       credentials: googleCreds,
       scopes: ["https://www.googleapis.com/auth/calendar.readonly"],
@@ -19,12 +17,12 @@ export async function handler(
     const calendar = google.calendar({ version: "v3", auth });
 
     // Specify the calendar ID you want to access
-    const calendarId = "your-calendar-id@example.com";
+    const calendarId = "fatcakeclub@gmail.com";
 
     // Fetch upcoming events
     const events = await calendar.events.list({
       calendarId,
-      timeMin: "2023-09-01T00:00:00Z",
+      timeMin: new Date().toLocaleDateString(),
       maxResults: 10,
       singleEvents: true,
       orderBy: "startTime",
@@ -32,7 +30,7 @@ export async function handler(
 
     // Prepare messages for Slack
     const slack = new WebClient(process.env.SLACK_API_TOKEN);
-    const slackChannel = "#your-slack-channel";
+    const slackChannel = "#claptrap-bot-test";
 
     let message = "";
     if (!events.data.items || events.data.items.length === 0) {
